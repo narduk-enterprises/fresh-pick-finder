@@ -1,6 +1,11 @@
-import { and, eq, sql } from 'drizzle-orm'
+import { and, eq, like, sql } from 'drizzle-orm'
 import { useAppDatabase } from '#server/utils/database'
 import { locations, seasonalOfferings } from '#server/database/app-schema'
+
+/** Convert a kebab-case slug to a SQL LIKE pattern: "san-antonio" → "%san%antonio%" */
+function citySlugToLike(slug: string): string {
+  return `%${slug.replace(/-/g, '%')}%`
+}
 
 export default defineEventHandler(async (event) => {
   const state = getRouterParam(event, 'state')
@@ -15,7 +20,12 @@ export default defineEventHandler(async (event) => {
   const locationRows = await db
     .select()
     .from(locations)
-    .where(and(eq(locations.state, state), eq(locations.city, city)))
+    .where(
+      and(
+        eq(locations.state, state.toUpperCase()),
+        like(locations.city, citySlugToLike(city)),
+      ),
+    )
     .all()
 
   const locationIds = locationRows.map((l) => l.id)
