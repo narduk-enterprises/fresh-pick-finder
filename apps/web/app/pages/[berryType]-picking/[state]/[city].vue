@@ -6,7 +6,7 @@ const route = useRoute()
 const berrySlug = route.params.berryType as string
 const state = (route.params.state as string).toUpperCase()
 const citySlug = route.params.city as string
-const cityName = citySlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+const cityName = cityFromSlug(citySlug)
 
 const berryInfo = computed(
   () => BERRY_TYPES.find(b => b.value === berrySlug) ?? { value: berrySlug, label: berrySlug.replace(/\b\w/g, c => c.toUpperCase()), icon: 'i-lucide-leaf', color: 'neutral' },

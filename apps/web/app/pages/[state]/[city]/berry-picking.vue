@@ -5,7 +5,7 @@ import { BERRY_TYPES } from '~/types/locations'
 const route = useRoute()
 const state = (route.params.state as string).toUpperCase()
 const citySlug = route.params.city as string
-const cityName = citySlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+const cityName = cityFromSlug(citySlug)
 
 const { data, status, error } = useFetch<{
   city: string
