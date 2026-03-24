@@ -50,7 +50,7 @@ export default defineNuxtConfig({
     url: process.env.SITE_URL || localSiteUrl,
     name: 'Fresh Pick Finder',
     description:
-      'Fresh Pick Finder — powered by Nuxt 4 and Cloudflare Workers.',
+      'Discover the best berry picking farms and u-pick locations near you. Find seasonal availability for strawberries, blueberries, blackberries, and more.',
     defaultLocale: 'en',
   },
 
