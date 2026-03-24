@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SeasonalInfo } from '~/composables/useSeasonalStatus'
+import { getSeasonalInfo } from '~/composables/useSeasonalStatus'
 
 const route = useRoute()
 const slug = route.params.slug as string
@@ -70,12 +71,11 @@ const amenitiesList = computed(() => {
 const offeringStatuses = computed(() => {
   const map = new Map<number, SeasonalInfo>()
   for (const offering of offerings.value) {
-    const info = useSeasonalStatus(
+    map.set(offering.id, getSeasonalInfo(
       offering.seasonStart ?? undefined,
       offering.seasonEnd ?? undefined,
       offering.status,
-    )
-    map.set(offering.id, info.value)
+    ))
   }
   return map
 })

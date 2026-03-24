@@ -38,34 +38,42 @@ const UNKNOWN: SeasonalInfo = {
   icon: 'i-lucide-help-circle',
 }
 
+/** Pure function for computing seasonal status without reactivity. */
+export function getSeasonalInfo(
+  seasonStart?: string,
+  seasonEnd?: string,
+  status?: string,
+): SeasonalInfo {
+  if (status === 'open') return OPEN
+  if (status === 'upcoming') return COMING_SOON
+  if (status === 'closed') return CLOSED
+  if (status === 'unknown') return UNKNOWN
+
+  if (seasonStart && seasonEnd) {
+    const currentMonth = new Date().getMonth() + 1
+    const start = Number.parseInt(seasonStart, 10)
+    const end = Number.parseInt(seasonEnd, 10)
+
+    const isInRange = start <= end
+      ? currentMonth >= start && currentMonth <= end
+      : currentMonth >= start || currentMonth <= end
+
+    if (isInRange) return OPEN
+
+    const oneMonthBefore = start === 1 ? 12 : start - 1
+    if (currentMonth === oneMonthBefore) return COMING_SOON
+
+    return CLOSED_FOR_SEASON
+  }
+
+  return UNKNOWN
+}
+
+/** Reactive composable returning a computed SeasonalInfo. */
 export function useSeasonalStatus(
   seasonStart?: string,
   seasonEnd?: string,
   status?: string,
 ): ComputedRef<SeasonalInfo> {
-  return computed(() => {
-    if (status === 'open') return OPEN
-    if (status === 'upcoming') return COMING_SOON
-    if (status === 'closed') return CLOSED
-    if (status === 'unknown') return UNKNOWN
-
-    if (seasonStart && seasonEnd) {
-      const currentMonth = new Date().getMonth() + 1
-      const start = Number.parseInt(seasonStart, 10)
-      const end = Number.parseInt(seasonEnd, 10)
-
-      const isInRange = start <= end
-        ? currentMonth >= start && currentMonth <= end
-        : currentMonth >= start || currentMonth <= end
-
-      if (isInRange) return OPEN
-
-      const oneMonthBefore = start === 1 ? 12 : start - 1
-      if (currentMonth === oneMonthBefore) return COMING_SOON
-
-      return CLOSED_FOR_SEASON
-    }
-
-    return UNKNOWN
-  })
+  return computed(() => getSeasonalInfo(seasonStart, seasonEnd, status))
 }
