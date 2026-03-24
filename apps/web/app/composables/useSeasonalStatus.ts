@@ -47,6 +47,7 @@ export function useSeasonalStatus(
     if (status === 'open') return OPEN
     if (status === 'upcoming') return COMING_SOON
     if (status === 'closed') return CLOSED
+    if (status === 'unknown') return UNKNOWN
 
     if (seasonStart && seasonEnd) {
       const currentMonth = new Date().getMonth() + 1
