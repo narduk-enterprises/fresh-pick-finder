@@ -21,25 +21,23 @@ useWebPageSchema({
   type: 'ItemPage',
 })
 
-watchEffect(() => {
-  if (!location.value) return
+// LocalBusiness schema — only inject when data is available during SSR
+if (location.value?.address && location.value.city && location.value.state) {
   const loc = location.value
-  if (loc.address && loc.city && loc.state) {
-    useLocalBusinessSchema({
-      name: loc.name,
-      description: loc.description ?? undefined,
-      telephone: loc.phone ?? undefined,
-      url: loc.website ?? undefined,
-      address: {
-        streetAddress: loc.address,
-        addressLocality: loc.city,
-        addressRegion: loc.state,
-        postalCode: loc.postalCode ?? '',
-      },
-      geo: loc.lat && loc.lng ? { latitude: loc.lat, longitude: loc.lng } : undefined,
-    })
-  }
-})
+  useLocalBusinessSchema({
+    name: loc.name,
+    description: loc.description ?? undefined,
+    telephone: loc.phone ?? undefined,
+    url: loc.website ?? undefined,
+    address: {
+      streetAddress: loc.address,
+      addressLocality: loc.city,
+      addressRegion: loc.state,
+      postalCode: loc.postalCode ?? '',
+    },
+    geo: loc.lat && loc.lng ? { latitude: loc.lat, longitude: loc.lng } : undefined,
+  })
+}
 
 const { items: breadcrumbItems } = useBreadcrumbs({
   resolveLabel: (segment: string) => {

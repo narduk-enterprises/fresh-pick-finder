@@ -6,7 +6,7 @@ import type {
 
 export interface LocationWithDetails extends Location {
   seasonalOfferings: SeasonalOffering[]
-  metadata: LocationMetadata | null
+  metadata?: LocationMetadata | null
 }
 
 export interface LocationListResponse {
@@ -26,12 +26,13 @@ export interface LocationFilters {
 }
 
 export interface RegionSummary {
+  city: string
+  state: string
   locations: LocationWithDetails[]
   summary: {
-    total: number
+    totalLocations: number
     berryTypes: string[]
-    openNow: number
-    upcoming: number
+    seasons: string[]
   }
 }
 

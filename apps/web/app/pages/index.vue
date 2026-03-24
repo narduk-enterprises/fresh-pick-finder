@@ -49,23 +49,24 @@ const features = [
       :ui="{ title: 'text-4xl sm:text-5xl lg:text-6xl', description: 'text-lg sm:text-xl text-muted max-w-2xl' }"
     >
       <template #links>
-        <form class="w-full max-w-lg flex gap-2" @submit.prevent="onSearch">
+        <div class="w-full max-w-lg flex gap-2">
           <UInput
             v-model="searchInput"
             placeholder="Search farms, cities, or berries…"
             icon="i-lucide-search"
             size="lg"
             class="flex-1"
+            @keydown.enter="onSearch"
           />
           <UButton
-            type="submit"
             color="primary"
             size="lg"
             label="Search"
             icon="i-lucide-arrow-right"
             trailing
+            @click="onSearch"
           />
-        </form>
+        </div>
       </template>
     </UPageHero>
 

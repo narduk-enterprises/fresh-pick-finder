@@ -1,4 +1,4 @@
-import { eq, sql, desc } from 'drizzle-orm'
+import { sql, desc } from 'drizzle-orm'
 import { requireAdmin } from '#layer/server/utils/auth'
 import { useAppDatabase } from '#server/utils/database'
 import { datasets, datasetRows, canonicalRows } from '#server/database/app-schema'
@@ -10,29 +10,38 @@ export default defineEventHandler(async (event) => {
 
   const datasetList = await db.select().from(datasets).orderBy(desc(datasets.createdAt)).all()
 
-  // Attach row counts for each dataset
-  const enriched = await Promise.all(
-    datasetList.map(async (ds) => {
-      const [rawCount, normalizedCount] = await Promise.all([
-        db
-          .select({ count: sql<number>`count(*)` })
-          .from(datasetRows)
-          .where(eq(datasetRows.datasetId, ds.id))
-          .get(),
-        db
-          .select({ count: sql<number>`count(*)` })
-          .from(canonicalRows)
-          .where(eq(canonicalRows.datasetId, ds.id))
-          .get(),
-      ])
+  if (datasetList.length === 0) {
+    return { datasets: [] }
+  }
 
-      return {
-        ...ds,
-        rawRowCount: Number(rawCount?.count ?? 0),
-        canonicalRowCount: Number(normalizedCount?.count ?? 0),
-      }
-    }),
-  )
+  // Batch-count raw and canonical rows with GROUP BY instead of N+1 queries
+  const [rawCounts, canonicalCounts] = await Promise.all([
+    db
+      .select({
+        datasetId: datasetRows.datasetId,
+        count: sql<number>`count(*)`,
+      })
+      .from(datasetRows)
+      .groupBy(datasetRows.datasetId)
+      .all(),
+    db
+      .select({
+        datasetId: canonicalRows.datasetId,
+        count: sql<number>`count(*)`,
+      })
+      .from(canonicalRows)
+      .groupBy(canonicalRows.datasetId)
+      .all(),
+  ])
 
-  return { datasets: enriched }
+  const rawCountMap = new Map(rawCounts.map((r) => [r.datasetId, Number(r.count)]))
+  const canonicalCountMap = new Map(canonicalCounts.map((r) => [r.datasetId, Number(r.count)]))
+
+  return {
+    datasets: datasetList.map((ds) => ({
+      ...ds,
+      rawRowCount: rawCountMap.get(ds.id) ?? 0,
+      canonicalRowCount: canonicalCountMap.get(ds.id) ?? 0,
+    })),
+  }
 })
