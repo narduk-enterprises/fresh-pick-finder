@@ -7,23 +7,23 @@ const slug = route.params.slug as string
 
 const { location, offerings, metadata, status } = useLocationDetail(slug)
 
+const pageTitle = computed(() =>
+  location.value ? `${location.value.name} — Berry Picking` : 'Farm Details — Berry Picking',
+)
+const pageDescription = computed(() =>
+  location.value
+    ? (location.value.description ?? `Visit ${location.value.name} for berry picking in ${location.value.city}, ${location.value.state}.`)
+    : 'Discover berry picking at this local farm.',
+)
+
 useSeo({
-  title: 'Farm Details — Berry Picking',
-  description: 'Discover berry picking at this local farm.',
+  title: pageTitle.value,
+  description: pageDescription.value,
 })
 
-// Update SEO when data loads
-watch(location, (loc) => {
-  if (!loc) return
-  useSeo({
-    title: `${loc.name} — Berry Picking`,
-    description: loc.description ?? `Visit ${loc.name} for berry picking in ${loc.city}, ${loc.state}.`,
-  })
-}, { immediate: true })
-
 useWebPageSchema({
-  name: 'Farm Details',
-  description: 'Berry picking farm details and seasonal offerings.',
+  name: pageTitle.value,
+  description: pageDescription.value,
   type: 'ItemPage',
 })
 
@@ -33,28 +33,6 @@ const { items: breadcrumbItems } = useBreadcrumbs({
     if (segment === slug) return location.value?.name
     return undefined
   },
-})
-
-watchEffect(() => {
-  if (!location.value) return
-  const loc = location.value
-  if (!loc.address || !loc.city || !loc.state || !loc.postalCode) return
-
-  useLocalBusinessSchema({
-    name: loc.name,
-    description: loc.description ?? undefined,
-    telephone: loc.phone ?? undefined,
-    url: loc.website ?? undefined,
-    address: {
-      streetAddress: loc.address,
-      addressLocality: loc.city,
-      addressRegion: loc.state,
-      postalCode: loc.postalCode,
-    },
-    geo: loc.lat != null && loc.lng != null
-      ? { latitude: loc.lat, longitude: loc.lng }
-      : undefined,
-  })
 })
 
 const amenitiesList = computed(() => {

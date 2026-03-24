@@ -11,7 +11,7 @@ const berryName = computed(() => berry.value?.name ?? berryType.charAt(0).toUppe
 
 useSeo({
   title: `${berryName.value} Picking — Find U-Pick Farms`,
-  description: `Find ${berryName.value.toLowerCase()} picking farms and U-pick orchards. Browse ${total.value} locations with seasonal availability and directions.`,
+  description: `Find ${berryName.value.toLowerCase()} picking farms and U-pick orchards near you. Seasonal availability, directions, and pricing included.`,
 })
 useWebPageSchema({
   name: `${berryName.value} Picking Locations`,

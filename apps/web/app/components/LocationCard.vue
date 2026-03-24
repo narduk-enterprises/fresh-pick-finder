@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import type { LocationItem } from '~/composables/useLocations'
+import { getSeasonalInfo } from '~/composables/useSeasonalStatus'
 
 const props = defineProps<{
   location: LocationItem
 }>()
 
-const firstOffering = computed(() => props.location.seasonalOfferings?.[0])
-const seasonalStatus = useSeasonalStatus(
-  firstOffering.value?.seasonStart ?? undefined,
-  firstOffering.value?.seasonEnd ?? undefined,
-  firstOffering.value?.status,
-)
+const seasonalStatus = computed(() => {
+  const first = props.location.seasonalOfferings?.[0]
+  if (!first) return getSeasonalInfo()
+  return getSeasonalInfo(
+    first.seasonStart ?? undefined,
+    first.seasonEnd ?? undefined,
+    first.status,
+  )
+})
 
 const uniqueItems = computed(() => {
   const items = props.location.seasonalOfferings ?? []

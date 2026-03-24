@@ -17,7 +17,7 @@ const {
 
 useSeo({
   title: `Berry Picking in ${cityDisplay.value}, ${state}`,
-  description: `Find the best berry picking farms and U-pick orchards in ${cityDisplay.value}, ${state}. Browse ${total.value} locations with seasonal availability.`,
+  description: `Find the best berry picking farms and U-pick orchards in ${cityDisplay.value}, ${state}. Seasonal availability and directions included.`,
 })
 useWebPageSchema({
   name: `Berry Picking in ${cityDisplay.value}, ${state}`,
