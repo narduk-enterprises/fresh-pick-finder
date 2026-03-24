@@ -1,0 +1,28 @@
+{
+  "$schema": "https://unpkg.com/wrangler@latest/config-schema.json",
+  "name": "fresh-pick-finder",
+  "main": ".output/server/index.mjs",
+  "assets": {
+    "directory": ".output/public"
+  },
+  "compatibility_date": "2026-03-03",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "fresh-pick-finder-db",
+      "database_id": "8fda1217-03a1-4ac1-b743-49591428a442"
+    }
+  ],
+  "routes": [
+    {
+      "pattern": "fresh-pick-finder.nard.uk",
+      "custom_domain": true
+    }
+  ]
+}
