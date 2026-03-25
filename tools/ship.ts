@@ -35,6 +35,23 @@ function parseMigrateCommand(rawCommand: string): string[] {
   return tokens
 }
 
+function getOutput(command: string, args: string[] = [], cwd = process.cwd()): string {
+  return runCommand(command, args, {
+    cwd,
+    encoding: 'utf-8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  }).trim()
+}
+
+function getUntrackedFiles(cwd: string): string[] {
+  const output = getOutput('git', ['ls-files', '--others', '--exclude-standard'], cwd)
+  if (!output) return []
+  return output
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+}
+
 
 async function shipApp(appTarget: string) {
   // Find target directory
@@ -68,7 +85,14 @@ async function shipApp(appTarget: string) {
 
   // 2. Git operations
   console.log(`\n📦 Checking git status...`)
-  run('git', ['add', '-A'], appDir)
+  const untrackedFiles = getUntrackedFiles(appDir)
+  if (untrackedFiles.length > 0) {
+    console.log(
+      `Ignoring untracked files during ship auto-commit: ${untrackedFiles.join(', ')}`,
+    )
+  }
+
+  run('git', ['add', '-u'], appDir)
 
   let hasChanges = false
   try {
