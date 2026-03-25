@@ -4,6 +4,7 @@ import { resolve, dirname } from 'node:path'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const localNuxtPort = Number(process.env.NUXT_PORT || 3000)
 const localSiteUrl = `http://localhost:${Number.isFinite(localNuxtPort) ? localNuxtPort : 3000}`
+const siteUrl = process.env.SITE_URL || 'https://fresh-pick-finder.nard.uk'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -36,6 +37,7 @@ export default defineNuxtConfig({
     posthogProjectId: process.env.POSTHOG_PROJECT_ID || '',
     public: {
       appUrl: process.env.SITE_URL || localSiteUrl,
+      siteUrl,
       appName: process.env.APP_NAME || 'Fresh Pick Finder',
       // Analytics (client-side tracking)
       posthogPublicKey: process.env.POSTHOG_PUBLIC_KEY || '',
@@ -47,10 +49,9 @@ export default defineNuxtConfig({
   },
 
   site: {
-    url: process.env.SITE_URL || localSiteUrl,
+    url: siteUrl,
     name: 'Fresh Pick Finder',
-    description:
-      'Fresh Pick Finder — powered by Nuxt 4 and Cloudflare Workers.',
+    description: 'Fresh Pick Finder — powered by Nuxt 4 and Cloudflare Workers.',
     defaultLocale: 'en',
   },
 
@@ -58,14 +59,14 @@ export default defineNuxtConfig({
     identity: {
       type: 'Organization',
       name: 'Fresh Pick Finder',
-      url: process.env.SITE_URL || localSiteUrl,
+      url: siteUrl,
       logo: '/favicon.svg',
     },
   },
 
   image: {
     cloudflare: {
-      baseURL: process.env.SITE_URL || localSiteUrl,
+      baseURL: siteUrl,
     },
   },
 })
